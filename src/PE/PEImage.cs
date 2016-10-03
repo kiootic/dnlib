@@ -163,6 +163,7 @@ namespace dnlib.PE {
 		/// <param name="verify">Verify PE file data</param>
 		public PEImage(string fileName, bool mapAsImage, bool verify)
 			: this(ImageStreamCreator.Create(fileName, mapAsImage), mapAsImage ? ImageLayout.Memory : ImageLayout.File, verify) {
+#if !NO_MMAP
 			try {
 				if (mapAsImage && imageStreamCreator is MemoryMappedFileStreamCreator) {
 					((MemoryMappedFileStreamCreator)imageStreamCreator).Length = peInfo.GetImageSize();
@@ -173,6 +174,7 @@ namespace dnlib.PE {
 				Dispose();
 				throw;
 			}
+#endif
 		}
 
 		/// <summary>
@@ -368,16 +370,22 @@ namespace dnlib.PE {
 
 		/// <inheritdoc/>
 		public void UnsafeDisableMemoryMappedIO() {
+#if !NO_MMAP
 			var creator = imageStreamCreator as MemoryMappedFileStreamCreator;
 			if (creator != null)
 				creator.UnsafeDisableMemoryMappedIO();
+#endif
 		}
 
 		/// <inheritdoc/>
 		public bool IsMemoryMappedIO {
 			get {
+#if !NO_MMAP
 				var creator = imageStreamCreator as MemoryMappedFileStreamCreator;
 				return creator == null ? false : creator.IsMemoryMappedIO;
+#else
+				return false;
+#endif
 			}
 		}
 	}

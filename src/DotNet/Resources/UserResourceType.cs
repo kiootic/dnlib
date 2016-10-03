@@ -1,4 +1,5 @@
 ﻿// dnlib: See LICENSE.txt for more info
+#if !NO_RESREAD
 
 namespace dnlib.DotNet.Resources {
 	/// <summary>
@@ -38,3 +39,4 @@ namespace dnlib.DotNet.Resources {
 		}
 	}
 }
+#endif

@@ -1,4 +1,5 @@
 // dnlib: See LICENSE.txt for more info
+#if !NO_CRYPTO
 
 ﻿using System;
 using System.IO;
@@ -135,3 +136,4 @@ namespace dnlib.DotNet {
 		}
 	}
 }
+#endif

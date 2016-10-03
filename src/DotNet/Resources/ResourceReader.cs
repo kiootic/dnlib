@@ -1,4 +1,5 @@
 ﻿// dnlib: See LICENSE.txt for more info
+#if !NO_RESREAD
 
 using System;
 using System.Collections.Generic;
@@ -220,3 +221,4 @@ namespace dnlib.DotNet.Resources {
 		}
 	}
 }
+#endif

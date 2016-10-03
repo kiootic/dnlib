@@ -18,6 +18,9 @@ using dnlib.Threading;
 		/// </summary>
 		public override PublicKeyToken Token {
 			get {
+#if NO_CRYPTO
+				return publicKeyToken;
+#else
 #if THREAD_SAFE
 				theLock.EnterWriteLock(); try {
 #endif
@@ -26,6 +29,7 @@ using dnlib.Threading;
 				return publicKeyToken;
 #if THREAD_SAFE
 				} finally { theLock.ExitWriteLock(); }
+#endif
 #endif
 			}
 		}

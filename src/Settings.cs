@@ -17,5 +17,44 @@ namespace dnlib {
 #endif
 			}
 		}
+
+		/// <summary>
+		/// <c>true</c> if dnlib is has resource reader. (<c>NO_RESREAD</c> was not defined during compilation)
+		/// </summary>
+		public static bool HasResourceReader {
+			get {
+#if !NO_RESREAD
+				return true;
+#else
+				return false;
+#endif
+			}
+		}
+
+		/// <summary>
+		/// <c>true</c> if dnlib is has MMap support. (<c>NO_MMAP</c> was not defined during compilation)
+		/// </summary>
+		public static bool HasMMap {
+			get {
+#if !NO_MMAP
+				return true;
+#else
+				return false;
+#endif
+			}
+		}
+
+		/// <summary>
+		/// <c>true</c> if dnlib is has Crypto support. (<c>NO_CRYPTO</c> was not defined during compilation)
+		/// </summary>
+		public static bool HasCrypto {
+			get {
+#if !NO_CRYPTO
+				return true;
+#else
+				return false;
+#endif
+			}
+		}
 	}
 }

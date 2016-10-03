@@ -590,8 +590,12 @@ namespace dnlib.DotNet.Writer {
 		/// </summary>
 		/// <param name="snSigOffset">Strong name signature offset</param>
 		protected void StrongNameSign(long snSigOffset) {
+#if NO_CRYPTO
+			throw new NotSupportedException("Crypto support not included.");
+#else
 			var snSigner = new StrongNameSigner(destStream, destStreamBaseOffset);
 			snSigner.WriteSignature(TheOptions.StrongNameKey, snSigOffset);
+#endif
 		}
 
 		bool CanWritePdb() {

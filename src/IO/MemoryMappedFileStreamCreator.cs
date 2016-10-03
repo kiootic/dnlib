@@ -1,4 +1,5 @@
 // dnlib: See LICENSE.txt for more info
+#if !NO_MMAP
 
 ﻿using System;
 using System.Diagnostics;
@@ -309,3 +310,4 @@ namespace dnlib.IO {
 		}
 	}
 }
+#endif

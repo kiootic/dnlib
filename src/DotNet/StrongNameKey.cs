@@ -674,6 +674,9 @@ namespace dnlib.DotNet {
 		/// Creates an <see cref="RSA"/> instance
 		/// </summary>
 		public RSA CreateRSA() {
+#if NO_CRYPTO
+			throw new NotSupportedException("Crypto support not included.");
+#else
 			RSAParameters rsaParams;
 #if THREAD_SAFE
 			theLock.EnterReadLock(); try {
@@ -700,6 +703,7 @@ namespace dnlib.DotNet {
 				((IDisposable)rsa).Dispose();
 				throw;
 			}
+#endif
 		}
 
 		/// <summary>
@@ -755,6 +759,9 @@ namespace dnlib.DotNet {
 		/// <param name="signaturePubKey">Signature public key</param>
 		/// <returns>The counter signature</returns>
 		public static byte[] CreateCounterSignature(StrongNamePublicKey identityPubKey, StrongNameKey identityKey, StrongNamePublicKey signaturePubKey) {
+#if NO_CRYPTO
+			throw new NotSupportedException("Crypto support not included.");
+#else
 			var hash = AssemblyHash.Hash(signaturePubKey.CreatePublicKey(), identityPubKey.HashAlgorithm);
 			using (var rsa = identityKey.CreateRSA()) {
 				var rsaFmt = new RSAPKCS1SignatureFormatter(rsa);
@@ -764,6 +771,7 @@ namespace dnlib.DotNet {
 				Array.Reverse(snSig);
 				return snSig;
 			}
+#endif
 		}
 	}
 }

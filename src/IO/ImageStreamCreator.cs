@@ -8,6 +8,7 @@ namespace dnlib.IO {
 	/// Creates a <see cref="IImageStreamCreator"/> instance
 	/// </summary>
 	public static class ImageStreamCreator {
+#if !NO_MMAP
 		static readonly bool isUnix;
 
 		static ImageStreamCreator() {
@@ -56,15 +57,6 @@ namespace dnlib.IO {
 		/// Creates a <see cref="IImageStream"/>
 		/// </summary>
 		/// <param name="fileName">Filename</param>
-		/// <returns>A new <see cref="IImageStream"/> instance</returns>
-		public static IImageStream CreateImageStream(string fileName) {
-			return CreateImageStream(fileName, false);
-		}
-
-		/// <summary>
-		/// Creates a <see cref="IImageStream"/>
-		/// </summary>
-		/// <param name="fileName">Filename</param>
 		/// <param name="mapAsImage"><c>true</c> if we should map it as an executable. Not supported
 		/// on Linux/Mac</param>
 		/// <returns>A new <see cref="IImageStream"/> instance</returns>
@@ -80,6 +72,51 @@ namespace dnlib.IO {
 					creator.Dispose();
 				throw;
 			}
+		}
+#else
+		/// <summary>
+		/// Creates a <see cref="IImageStreamCreator"/>.
+		/// </summary>
+		/// <param name="fileName">Filename</param>
+		/// <returns>A new <see cref="ImageStreamCreator"/> instance</returns>
+		public static IImageStreamCreator Create(string fileName) {
+			return new MemoryStreamCreator(File.ReadAllBytes(fileName)) { FileName = fileName };
+		}
+
+		/// <summary>
+		/// Creates a <see cref="IImageStreamCreator"/>.
+		/// </summary>
+		/// <param name="fileName">Filename</param>
+		/// <param name="mapAsImage">Must be <c>false</c></param>
+		/// <returns>A new <see cref="ImageStreamCreator"/> instance</returns>
+		public static IImageStreamCreator Create(string fileName, bool mapAsImage) {
+			if (mapAsImage)
+				return null;
+
+			return new MemoryStreamCreator(File.ReadAllBytes(fileName)) { FileName = fileName };
+		}
+
+		/// <summary>
+		/// Creates a <see cref="IImageStream"/>
+		/// </summary>
+		/// <param name="fileName">Filename</param>
+		/// <param name="mapAsImage">Must be <c>false</c></param>
+		/// <returns>A new <see cref="IImageStream"/> instance</returns>
+		public static IImageStream CreateImageStream(string fileName, bool mapAsImage) {
+			if (mapAsImage)
+				return null;
+
+			return MemoryImageStream.Create(File.ReadAllBytes(fileName));
+		}
+#endif
+
+		/// <summary>
+		/// Creates a <see cref="IImageStream"/>
+		/// </summary>
+		/// <param name="fileName">Filename</param>
+		/// <returns>A new <see cref="IImageStream"/> instance</returns>
+		public static IImageStream CreateImageStream(string fileName) {
+			return CreateImageStream(fileName, false);
 		}
 	}
 }

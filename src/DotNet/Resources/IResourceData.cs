@@ -1,4 +1,5 @@
 ﻿// dnlib: See LICENSE.txt for more info
+#if !NO_RESREAD
 
 using System.IO;
 using System.Runtime.Serialization;
@@ -33,3 +34,4 @@ namespace dnlib.DotNet.Resources {
 		void WriteData(BinaryWriter writer, IFormatter formatter);
 	}
 }
+#endif
