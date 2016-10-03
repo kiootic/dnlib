@@ -2,7 +2,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.SymbolStore;
 using System.IO;
 using System.Runtime.ExceptionServices;
 using System.Runtime.InteropServices;
@@ -17,6 +16,7 @@ using dnlib.DotNet.Pdb;
 using dnlib.W32Resources;
 
 using DNW = dnlib.DotNet.Writer;
+using dnlib.DotNet.Pdb.Managed;
 
 namespace dnlib.DotNet {
 	/// <summary>
@@ -417,38 +417,55 @@ namespace dnlib.DotNet {
 			InitializePdb(options);
 		}
 
+		static IImageStream OpenImageStream(string fileName) {
+			try {
+				if (!File.Exists(fileName))
+					return null;
+				return ImageStreamCreator.CreateImageStream(fileName);
+			} catch (IOException) {
+			} catch (UnauthorizedAccessException) {
+			} catch (SecurityException) {
+			}
+			return null;
+		}
+
+		static PdbReader ReadPdbStream(IImageStream pdbStream) {
+			if (pdbStream == null)
+				return null;
+
+			using (pdbStream) {
+				var symReader = new PdbReader();
+				symReader.Read(pdbStream);
+				return symReader;
+			}
+		}
+
 		void InitializePdb(ModuleCreationOptions options) {
 			if (options == null)
 				return;
 			LoadPdb(CreateSymbolReader(options));
 		}
 
-		ISymbolReader CreateSymbolReader(ModuleCreationOptions options) {
-			if (options.CreateSymbolReader != null) {
-				var symReader = options.CreateSymbolReader(this);
-				if (symReader != null)
-					return symReader;
-			}
-
+		PdbReader CreateSymbolReader(ModuleCreationOptions options) {
 			if (options.PdbFileOrData != null) {
 				var pdbFileName = options.PdbFileOrData as string;
 				if (!string.IsNullOrEmpty(pdbFileName)) {
-					var symReader = SymbolReaderCreator.Create(options.PdbImplementation, metaData, pdbFileName);
+					var symReader = ReadPdbStream(OpenImageStream(pdbFileName));
 					if (symReader != null)
 						return symReader;
 				}
 
 				var pdbData = options.PdbFileOrData as byte[];
 				if (pdbData != null)
-					return SymbolReaderCreator.Create(options.PdbImplementation, metaData, pdbData);
+					return ReadPdbStream(MemoryImageStream.Create(pdbData));
 
 				var pdbStream = options.PdbFileOrData as IImageStream;
 				if (pdbStream != null)
-					return SymbolReaderCreator.Create(options.PdbImplementation, metaData, pdbStream);
+					return ReadPdbStream(pdbStream);
 			}
 
 			if (options.TryToLoadPdbFromDisk && !string.IsNullOrEmpty(location))
-				return SymbolReaderCreator.Create(options.PdbImplementation, location);
+				return ReadPdbStream(OpenImageStream(Path.ChangeExtension(location, "pdb")));
 
 			return null;
 		}
@@ -457,7 +474,7 @@ namespace dnlib.DotNet {
 		/// Loads symbols using <paramref name="symbolReader"/>
 		/// </summary>
 		/// <param name="symbolReader">PDB symbol reader</param>
-		public void LoadPdb(ISymbolReader symbolReader) {
+		public void LoadPdb(PdbReader symbolReader) {
 			if (symbolReader == null)
 				return;
 			if (pdbState != null)
@@ -473,16 +490,7 @@ namespace dnlib.DotNet {
 		/// </summary>
 		/// <param name="pdbFileName">PDB file name</param>
 		public void LoadPdb(string pdbFileName) {
-			LoadPdb(PdbImplType.Default, pdbFileName);
-		}
-
-		/// <summary>
-		/// Loads symbols from a PDB file
-		/// </summary>
-		/// <param name="pdbImpl">PDB implementation to use</param>
-		/// <param name="pdbFileName">PDB file name</param>
-		public void LoadPdb(PdbImplType pdbImpl, string pdbFileName) {
-			LoadPdb(SymbolReaderCreator.Create(pdbImpl, metaData, pdbFileName));
+			LoadPdb(pdbFileName);
 		}
 
 		/// <summary>
@@ -490,16 +498,7 @@ namespace dnlib.DotNet {
 		/// </summary>
 		/// <param name="pdbData">PDB data</param>
 		public void LoadPdb(byte[] pdbData) {
-			LoadPdb(PdbImplType.Default, pdbData);
-		}
-
-		/// <summary>
-		/// Loads symbols from a byte array
-		/// </summary>
-		/// <param name="pdbImpl">PDB implementation to use</param>
-		/// <param name="pdbData">PDB data</param>
-		public void LoadPdb(PdbImplType pdbImpl, byte[] pdbData) {
-			LoadPdb(SymbolReaderCreator.Create(pdbImpl, metaData, pdbData));
+			LoadPdb(pdbData);
 		}
 
 		/// <summary>
@@ -507,34 +506,14 @@ namespace dnlib.DotNet {
 		/// </summary>
 		/// <param name="pdbStream">PDB file stream which is now owned by us</param>
 		public void LoadPdb(IImageStream pdbStream) {
-			LoadPdb(PdbImplType.Default, pdbStream);
-		}
-
-		/// <summary>
-		/// Loads symbols from a stream
-		/// </summary>
-		/// <param name="pdbImpl">PDB implementation to use</param>
-		/// <param name="pdbStream">PDB file stream which is now owned by us</param>
-		public void LoadPdb(PdbImplType pdbImpl, IImageStream pdbStream) {
-			LoadPdb(SymbolReaderCreator.Create(pdbImpl, metaData, pdbStream));
+			LoadPdb(pdbStream);
 		}
 
 		/// <summary>
 		/// Loads symbols if a PDB file is available
 		/// </summary>
 		public void LoadPdb() {
-			LoadPdb(PdbImplType.Default);
-		}
-
-		/// <summary>
-		/// Loads symbols if a PDB file is available
-		/// </summary>
-		/// <param name="pdbImpl">PDB implementation to use</param>
-		public void LoadPdb(PdbImplType pdbImpl) {
-			var loc = location;
-			if (string.IsNullOrEmpty(loc))
-				return;
-			LoadPdb(SymbolReaderCreator.Create(pdbImpl, loc));
+			LoadPdb();
 		}
 
 		ModuleKind GetKind() {
@@ -1659,7 +1638,6 @@ namespace dnlib.DotNet {
 		/// </summary>
 		/// <param name="offset">Offset of resource relative to the .NET resources section</param>
 		/// <returns>A stream the size of the resource</returns>
-		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
 		IImageStream CreateResourceStream(uint offset) {
 			IImageStream fs = null, imageStream = null;
 			try {
@@ -2039,10 +2017,6 @@ namespace dnlib.DotNet {
 				return BlobStream.Read(msRow.Instantiation);
 			}
 
-			return null;
-		}
-
-		TypeSig ISignatureReaderHelper.ConvertRTInternalAddress(IntPtr address) {
 			return null;
 		}
 	}

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.ExceptionServices;
 using System.Security;
 using System.Threading;
 using dnlib.IO;
@@ -88,8 +87,7 @@ namespace dnlib.DotNet.MD {
 			this.baseOffset = (long)baseOffset;
 			this.endOffset = (long)baseOffset + imageStream.Length;
 		}
-
-		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
+		
 		HotTableStream CreateHotTableStream() {
 			try {
 				return CreateHotTableStreamImpl();
@@ -101,8 +99,7 @@ namespace dnlib.DotNet.MD {
 				return null;
 			}
 		}
-
-		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
+		
 		ThreadSafe.IList<HotHeapStream> CreateHotHeapStreams() {
 			try {
 				return CreateHotHeapStreams2();

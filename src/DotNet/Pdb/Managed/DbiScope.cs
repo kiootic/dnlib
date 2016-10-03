@@ -7,7 +7,7 @@ using System.Diagnostics.SymbolStore;
 using dnlib.IO;
 
 namespace dnlib.DotNet.Pdb.Managed {
-	sealed class DbiScope : ISymbolScope {
+	sealed class DbiScope  {
 		public DbiScope(string name, uint offset, uint length) {
 			Name = name;
 			BeginOffset = offset;
@@ -67,49 +67,6 @@ namespace dnlib.DotNet.Pdb.Managed {
 				}
 			}
 			counter.Decrement();
-			if (stream.Position != scopeEnd)
-				Debugger.Break();
 		}
-
-		#region ISymbolScope
-
-		int ISymbolScope.StartOffset {
-			get { return (int)BeginOffset; }
-		}
-
-		int ISymbolScope.EndOffset {
-			get { return (int)EndOffset; }
-		}
-
-		ISymbolScope[] ISymbolScope.GetChildren() {
-			var scopes = new ISymbolScope[Children.Count];
-			for (int i = 0; i < scopes.Length; i++)
-				scopes[i] = Children[i];
-			return scopes;
-		}
-
-		ISymbolVariable[] ISymbolScope.GetLocals() {
-			var vars = new ISymbolVariable[Variables.Count];
-			for (int i = 0; i < vars.Length; i++)
-				vars[i] = Variables[i];
-			return vars;
-		}
-
-		ISymbolNamespace[] ISymbolScope.GetNamespaces() {
-			var nss = new ISymbolNamespace[Namespaces.Count];
-			for (int i = 0; i < nss.Length; i++)
-				nss[i] = Namespaces[i];
-			return nss;
-		}
-
-		ISymbolMethod ISymbolScope.Method {
-			get { throw new NotImplementedException(); }
-		}
-
-		ISymbolScope ISymbolScope.Parent {
-			get { throw new NotImplementedException(); }
-		}
-
-		#endregion
 	}
 }

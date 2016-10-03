@@ -2,7 +2,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Diagnostics.SymbolStore;
+using dnlib.DotNet.Pdb.Managed;
 
 namespace dnlib.DotNet.Pdb {
 	/// <summary>
@@ -16,17 +16,17 @@ namespace dnlib.DotNet.Pdb {
 		public string Url { get; set; }
 
 		/// <summary>
-		/// Gets/sets the language GUID. See <see cref="SymLanguageType"/>
+		/// Gets/sets the language GUID.
 		/// </summary>
 		public Guid Language { get; set; }
 
 		/// <summary>
-		/// Gets/sets the language vendor GUID. See <see cref="SymLanguageVendor"/>
+		/// Gets/sets the language vendor GUID.
 		/// </summary>
 		public Guid LanguageVendor { get; set; }
 
 		/// <summary>
-		/// Gets/sets the document type GUID. See <see cref="SymDocumentType"/>
+		/// Gets/sets the document type GUID.
 		/// </summary>
 		public Guid DocumentType { get; set; }
 
@@ -49,8 +49,8 @@ namespace dnlib.DotNet.Pdb {
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="symDoc">A <see cref="ISymbolDocument"/> instance</param>
-		public PdbDocument(ISymbolDocument symDoc) {
+		/// <param name="symDoc">A <see cref="DbiDocument"/> instance</param>
+		internal PdbDocument(DbiDocument symDoc) {
 			if (symDoc == null)
 				throw new ArgumentNullException("symDoc");
 			this.Url = symDoc.URL;
@@ -58,16 +58,16 @@ namespace dnlib.DotNet.Pdb {
 			this.LanguageVendor = symDoc.LanguageVendor;
 			this.DocumentType = symDoc.DocumentType;
 			this.CheckSumAlgorithmId = symDoc.CheckSumAlgorithmId;
-			this.CheckSum = symDoc.GetCheckSum();
+			this.CheckSum = symDoc.CheckSum;
 		}
 
 		/// <summary>
 		/// Constructor
 		/// </summary>
 		/// <param name="url">Document URL</param>
-		/// <param name="language">Language. See <see cref="SymLanguageType"/></param>
-		/// <param name="languageVendor">Language vendor. See <see cref="SymLanguageVendor"/></param>
-		/// <param name="documentType">Document type. See <see cref="SymDocumentType"/></param>
+		/// <param name="language">Language.</param>
+		/// <param name="languageVendor">Language vendor.</param>
+		/// <param name="documentType">Document type.</param>
 		/// <param name="checkSumAlgorithmId">Checksum algorithm ID</param>
 		/// <param name="checkSum">Checksum</param>
 		public PdbDocument(string url, Guid language, Guid languageVendor, Guid documentType, Guid checkSumAlgorithmId, byte[] checkSum) {

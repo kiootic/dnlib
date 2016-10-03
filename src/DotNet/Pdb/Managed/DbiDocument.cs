@@ -5,7 +5,7 @@ using System.Diagnostics.SymbolStore;
 using dnlib.IO;
 
 namespace dnlib.DotNet.Pdb.Managed {
-	sealed class DbiDocument : ISymbolDocument {
+	sealed class DbiDocument {
 		public string URL { get; private set; }
 		public Guid Language { get; private set; }
 		public Guid LanguageVendor { get; private set; }
@@ -15,7 +15,7 @@ namespace dnlib.DotNet.Pdb.Managed {
 
 		public DbiDocument(string url) {
 			URL = url;
-			DocumentType = SymDocumentType.Text;
+			DocumentType = new Guid(0x5a869d0b, 0x6611, 0x11d3, 0xbd, 0x2a, 0x0, 0x0, 0xf8, 0x8, 0x49, 0xbd);
 		}
 
 		public void Read(IImageStream stream) {
@@ -31,49 +31,5 @@ namespace dnlib.DotNet.Pdb.Managed {
 
 			CheckSum = stream.ReadBytes(len);
 		}
-
-		#region ISymbolDocument
-
-		Guid ISymbolDocument.CheckSumAlgorithmId {
-			get { return CheckSumAlgorithmId; }
-		}
-
-		Guid ISymbolDocument.DocumentType {
-			get { return DocumentType; }
-		}
-
-		byte[] ISymbolDocument.GetCheckSum() {
-			return CheckSum;
-		}
-
-		Guid ISymbolDocument.Language {
-			get { return Language; }
-		}
-
-		Guid ISymbolDocument.LanguageVendor {
-			get { return LanguageVendor; }
-		}
-
-		string ISymbolDocument.URL {
-			get { return URL; }
-		}
-
-		int ISymbolDocument.FindClosestLine(int line) {
-			throw new NotImplementedException();
-		}
-
-		byte[] ISymbolDocument.GetSourceRange(int startLine, int startColumn, int endLine, int endColumn) {
-			throw new NotImplementedException();
-		}
-
-		bool ISymbolDocument.HasEmbeddedSource {
-			get { throw new NotImplementedException(); }
-		}
-
-		int ISymbolDocument.SourceLength {
-			get { throw new NotImplementedException(); }
-		}
-
-		#endregion
 	}
 }

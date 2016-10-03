@@ -2,7 +2,6 @@
 
 using System;
 using System.IO;
-using System.Runtime.ExceptionServices;
 using System.Security;
 using dnlib.IO;
 
@@ -119,7 +118,6 @@ namespace dnlib.DotNet.MD {
 		}
 
 		/// <inheritdoc/>
-		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
 		public override void Initialize(long mask) {
 			tableHeaders = new TableHeader[MAX_TABLES];
 			for (int i = 0; i < tableHeaders.Length; i++) {
@@ -209,7 +207,6 @@ namespace dnlib.DotNet.MD {
 		}
 
 		/// <inheritdoc/>
-		[HandleProcessCorruptedStateExceptions, SecurityCritical]	// Req'd on .NET 4.0
 		public override void Initialize(long mask) {
 			tableHeaders = new TableHeader[MAX_TABLES];
 			for (int i = 0; i < tableHeaders.Length; i++) {

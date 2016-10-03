@@ -166,33 +166,6 @@ namespace dnlib.DotNet.Writer {
 		}
 
 		/// <summary>
-		/// Set it to <c>true</c> to enable writing a PDB file. Default is <c>false</c> (a PDB file
-		/// won't be written to disk).
-		/// </summary>
-		public bool WritePdb { get; set; }
-
-		/// <summary>
-		/// PDB file name. If it's <c>null</c> a PDB file with the same name as the output assembly
-		/// will be created but with a PDB extension. <see cref="WritePdb"/> must be <c>true</c> or
-		/// this property is ignored.
-		/// </summary>
-		public string PdbFileName { get; set; }
-
-		/// <summary>
-		/// PDB stream. If this is initialized, then you should also set <see cref="PdbFileName"/>
-		/// to the name of the PDB file since the file name must be written to the PE debug directory.
-		/// <see cref="WritePdb"/> must be <c>true</c> or this property is ignored.
-		/// </summary>
-		public Stream PdbStream { get; set; }
-
-		/// <summary>
-		/// If <see cref="PdbFileName"/> or <see cref="PdbStream"/> aren't enough, this can be used
-		/// to create a new <see cref="ISymbolWriter2"/> instance. <see cref="WritePdb"/> must be
-		/// <c>true</c> or this property is ignored.
-		/// </summary>
-		public CreatePdbSymbolWriterDelegate CreatePdbSymbolWriter { get; set; }
-
-		/// <summary>
 		/// Default constructor
 		/// </summary>
 		protected ModuleWriterOptionsBase() {
@@ -324,13 +297,6 @@ namespace dnlib.DotNet.Writer {
 				module.Assembly.UpdateOrCreateAssemblySignatureKeyAttribute(identityPubKey, identityKey, signaturePubKey);
 		}
 	}
-
-	/// <summary>
-	/// Creates a new <see cref="ISymbolWriter2"/> instance
-	/// </summary>
-	/// <param name="writer">Module writer</param>
-	/// <returns>A new <see cref="ISymbolWriter2"/> instance</returns>
-	public delegate ISymbolWriter2 CreatePdbSymbolWriterDelegate(ModuleWriterBase writer);
 
 	/// <summary>
 	/// Module writer base class
@@ -629,7 +595,7 @@ namespace dnlib.DotNet.Writer {
 		}
 
 		bool CanWritePdb() {
-			return TheOptions.WritePdb && Module.PdbState != null;
+			return false;
 		}
 
 		/// <summary>
@@ -647,37 +613,6 @@ namespace dnlib.DotNet.Writer {
 		protected void WritePdbFile() {
 			if (!CanWritePdb())
 				return;
-			if (debugDirectory == null)
-				throw new InvalidOperationException("debugDirectory is null but WritePdb is true");
-
-			var pdbState = Module.PdbState;
-			if (pdbState == null) {
-				Error("TheOptions.WritePdb is true but module has no PdbState");
-				debugDirectory.DontWriteAnything = true;
-				return;
-			}
-
-			var symWriter = GetSymbolWriter2();
-			if (symWriter == null) {
-				Error("Could not create a PDB symbol writer. A Windows OS might be required.");
-				debugDirectory.DontWriteAnything = true;
-				return;
-			}
-
-			var pdbWriter = new PdbWriter(symWriter, pdbState, metaData);
-			try {
-				pdbWriter.Logger = TheOptions.Logger;
-				pdbWriter.Write();
-
-				debugDirectory.Data = pdbWriter.GetDebugInfo(out debugDirectory.debugDirData);
-				debugDirectory.TimeDateStamp = GetTimeDateStamp();
-				pdbWriter.Dispose();
-			}
-			catch {
-				pdbWriter.Dispose();
-				DeleteFileNoThrow(createdPdbFileName);
-				throw;
-			}
 		}
 
 		uint GetTimeDateStamp() {
@@ -686,31 +621,6 @@ namespace dnlib.DotNet.Writer {
 				return (uint)td;
 			TheOptions.PEHeadersOptions.TimeDateStamp = PEHeadersOptions.CreateNewTimeDateStamp();
 			return (uint)TheOptions.PEHeadersOptions.TimeDateStamp;
-		}
-
-		ISymbolWriter2 GetSymbolWriter2() {
-			if (TheOptions.CreatePdbSymbolWriter != null) {
-				var writer = TheOptions.CreatePdbSymbolWriter(this);
-				if (writer != null)
-					return writer;
-			}
-
-			if (TheOptions.PdbStream != null) {
-				return SymbolWriterCreator.Create(TheOptions.PdbStream,
-							TheOptions.PdbFileName ??
-							GetStreamName(TheOptions.PdbStream) ??
-							GetDefaultPdbFileName());
-			}
-
-			if (!string.IsNullOrEmpty(TheOptions.PdbFileName)) {
-				createdPdbFileName = TheOptions.PdbFileName;
-				return SymbolWriterCreator.Create(createdPdbFileName);
-			}
-
-			createdPdbFileName = GetDefaultPdbFileName();
-			if (createdPdbFileName == null)
-				return null;
-			return SymbolWriterCreator.Create(createdPdbFileName);
 		}
 
 		static string GetStreamName(Stream stream) {

@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.SymbolStore;
 using System.Text;
 using dnlib.IO;
 
@@ -11,7 +10,7 @@ namespace dnlib.DotNet.Pdb.Managed {
 	/// <summary>
 	/// A managed PDB reader implementation for .NET modules.
 	/// </summary>
-	public sealed class PdbReader : ISymbolReader {
+	public sealed class PdbReader {
 		MsfStream[] streams;
 		Dictionary<string, uint> names;
 		Dictionary<uint, string> strings;
@@ -23,9 +22,9 @@ namespace dnlib.DotNet.Pdb.Managed {
 		const int STREAM_DBI = 3;
 		const ushort STREAM_INVALID_INDEX = ushort.MaxValue;
 
-		Dictionary<string, DbiDocument> documents;
-		Dictionary<uint, DbiFunction> functions;
-		uint entryPt;
+		internal Dictionary<string, DbiDocument> documents;
+		internal Dictionary<uint, DbiFunction> functions;
+		internal uint entryPt;
 
 		/// <summary>
 		/// The age of PDB file.
@@ -305,56 +304,5 @@ namespace dnlib.DotNet.Pdb.Managed {
 			stream.Position++;
 			return value;
 		}
-
-		#region ISymbolReader
-
-		ISymbolMethod ISymbolReader.GetMethod(SymbolToken method) {
-			DbiFunction symMethod;
-			if (functions.TryGetValue((uint)method.GetToken(), out symMethod))
-				return symMethod;
-			return null;
-		}
-
-		ISymbolDocument[] ISymbolReader.GetDocuments() {
-			var docs = new ISymbolDocument[documents.Count];
-			int i = 0;
-			foreach (var doc in documents.Values)
-				docs[i++] = doc;
-			return docs;
-		}
-
-		SymbolToken ISymbolReader.UserEntryPoint {
-			get { return new SymbolToken((int)entryPt); }
-		}
-
-		ISymbolDocument ISymbolReader.GetDocument(string url, Guid language, Guid languageVendor, Guid documentType) {
-			throw new NotImplementedException();
-		}
-
-		ISymbolVariable[] ISymbolReader.GetGlobalVariables() {
-			throw new NotImplementedException();
-		}
-
-		ISymbolMethod ISymbolReader.GetMethod(SymbolToken method, int version) {
-			throw new NotImplementedException();
-		}
-
-		ISymbolMethod ISymbolReader.GetMethodFromDocumentPosition(ISymbolDocument document, int line, int column) {
-			throw new NotImplementedException();
-		}
-
-		ISymbolNamespace[] ISymbolReader.GetNamespaces() {
-			throw new NotImplementedException();
-		}
-
-		byte[] ISymbolReader.GetSymAttribute(SymbolToken parent, string name) {
-			throw new NotImplementedException();
-		}
-
-		ISymbolVariable[] ISymbolReader.GetVariables(SymbolToken parent) {
-			throw new NotImplementedException();
-		}
-
-		#endregion
 	}
 }

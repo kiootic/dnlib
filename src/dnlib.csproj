@@ -45,7 +45,6 @@
     <Compile Include="DotNet\AssemblyNameComparer.cs" />
     <Compile Include="DotNet\AssemblyNameInfo.cs" />
     <Compile Include="DotNet\AssemblyRef.cs" />
-    <Compile Include="DotNet\AssemblyResolver.cs" />
     <Compile Include="DotNet\CallingConvention.cs" />
     <Compile Include="DotNet\CallingConventionSig.cs" />
     <Compile Include="DotNet\ClassLayout.cs" />
@@ -58,7 +57,6 @@
     <Compile Include="DotNet\DeclSecurityReader.cs" />
     <Compile Include="DotNet\ElementType.cs" />
     <Compile Include="DotNet\Emit\Code.cs" />
-    <Compile Include="DotNet\Emit\DynamicMethodBodyReader.cs" />
     <Compile Include="DotNet\Emit\ExceptionHandler.cs" />
     <Compile Include="DotNet\Emit\ExceptionHandlerType.cs" />
     <Compile Include="DotNet\Emit\Extensions.cs" />
@@ -70,7 +68,6 @@
     <Compile Include="DotNet\Emit\MethodBody.cs" />
     <Compile Include="DotNet\Emit\MethodBodyReader.cs" />
     <Compile Include="DotNet\Emit\MethodBodyReaderBase.cs" />
-    <Compile Include="DotNet\Emit\MethodTableToTypeConverter.cs" />
     <Compile Include="DotNet\Emit\MethodUtils.cs" />
     <Compile Include="DotNet\Emit\OpCode.cs" />
     <Compile Include="DotNet\Emit\OpCodeType.cs" />
@@ -164,27 +161,6 @@
     <Compile Include="DotNet\ModuleRef.cs" />
     <Compile Include="DotNet\NativeType.cs" />
     <Compile Include="DotNet\NullResolver.cs" />
-    <Compile Include="DotNet\Pdb\Managed\PdbAddress.cs" />
-    <Compile Include="DotNet\PInvokeAttributes.cs" />
-    <Compile Include="DotNet\ParamAttributes.cs" />
-    <Compile Include="DotNet\ParamDef.cs" />
-    <Compile Include="DotNet\ParameterList.cs" />
-    <Compile Include="DotNet\Pdb\Dss\ComInterfaces.cs" />
-    <Compile Include="DotNet\Pdb\Dss\ImageStreamIStream.cs" />
-    <Compile Include="DotNet\Pdb\Dss\MDEmitter.cs" />
-    <Compile Include="DotNet\Pdb\Dss\PinnedMetaData.cs" />
-    <Compile Include="DotNet\Pdb\Dss\StreamIStream.cs" />
-    <Compile Include="DotNet\Pdb\Dss\SymbolDocument.cs" />
-    <Compile Include="DotNet\Pdb\Dss\SymbolDocumentWriter.cs" />
-    <Compile Include="DotNet\Pdb\Dss\SymbolMethod.cs" />
-    <Compile Include="DotNet\Pdb\Dss\SymbolNamespace.cs" />
-    <Compile Include="DotNet\Pdb\Dss\SymbolReader.cs" />
-    <Compile Include="DotNet\Pdb\Dss\SymbolReaderCreator.cs" />
-    <Compile Include="DotNet\Pdb\Dss\SymbolScope.cs" />
-    <Compile Include="DotNet\Pdb\Dss\SymbolVariable.cs" />
-    <Compile Include="DotNet\Pdb\Dss\SymbolWriter.cs" />
-    <Compile Include="DotNet\Pdb\Dss\SymbolWriterCreator.cs" />
-    <Compile Include="DotNet\Pdb\ISymbolWriter2.cs" />
     <Compile Include="DotNet\Pdb\Managed\DbiDocument.cs" />
     <Compile Include="DotNet\Pdb\Managed\DbiFunction.cs" />
     <Compile Include="DotNet\Pdb\Managed\DbiModule.cs" />
@@ -194,18 +170,19 @@
     <Compile Include="DotNet\Pdb\Managed\DbiVariable.cs" />
     <Compile Include="DotNet\Pdb\Managed\ModuleStreamType.cs" />
     <Compile Include="DotNet\Pdb\Managed\MsfStream.cs" />
+    <Compile Include="DotNet\Pdb\Managed\PdbAddress.cs" />
     <Compile Include="DotNet\Pdb\Managed\PdbException.cs" />
     <Compile Include="DotNet\Pdb\Managed\PdbReader.cs" />
-    <Compile Include="DotNet\Pdb\Managed\SymbolReaderCreator.cs" />
     <Compile Include="DotNet\Pdb\Managed\SymbolType.cs" />
     <Compile Include="DotNet\Pdb\PdbDocument.cs" />
-    <Compile Include="DotNet\Pdb\PdbImplType.cs" />
     <Compile Include="DotNet\Pdb\PdbScope.cs" />
     <Compile Include="DotNet\Pdb\PdbState.cs" />
-    <Compile Include="DotNet\Pdb\PdbWriter.cs" />
     <Compile Include="DotNet\Pdb\SequencePoint.cs" />
-    <Compile Include="DotNet\Pdb\SymbolReaderCreator.cs" />
-    <Compile Include="DotNet\Pdb\SymbolWriterCreator.cs" />
+    <Compile Include="DotNet\Pdb\Managed\SymAddressKind.cs" />
+    <Compile Include="DotNet\PInvokeAttributes.cs" />
+    <Compile Include="DotNet\ParamAttributes.cs" />
+    <Compile Include="DotNet\ParamDef.cs" />
+    <Compile Include="DotNet\ParameterList.cs" />
     <Compile Include="DotNet\PropertyAttributes.cs" />
     <Compile Include="DotNet\PropertyDef.cs" />
     <Compile Include="DotNet\PublicKey.cs" />
@@ -304,7 +281,6 @@
     <Compile Include="DotNet\Writer\Win32ResourcesChunk.cs" />
     <Compile Include="DotNet\Writer\WriterUtils.cs" />
     <Compile Include="ExtensionAttribute.cs" />
-    <Compile Include="HandleProcessCorruptedStateExceptionsAttribute.cs" />
     <Compile Include="IO\BinaryReaderStream.cs" />
     <Compile Include="IO\FileOffset.cs" />
     <Compile Include="IO\FileSection.cs" />
@@ -358,10 +334,6 @@
     <Compile Include="W32Resources\Win32Resources.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.XML" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="..\LICENSE.txt">
       <Link>LICENSE.txt</Link>
     </Content>
@@ -370,6 +342,9 @@
     <None Include="..\README.md">
       <Link>README.md</Link>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

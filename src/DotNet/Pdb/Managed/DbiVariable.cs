@@ -1,11 +1,10 @@
 ﻿// dnlib: See LICENSE.txt for more info
 
 ﻿using System;
-using System.Diagnostics.SymbolStore;
 using dnlib.IO;
 
 namespace dnlib.DotNet.Pdb.Managed {
-	sealed class DbiVariable : ISymbolVariable {
+	sealed class DbiVariable {
 		public uint Addr1 { get; private set; }
 		public string Name { get; private set; }
 		public ushort Flags { get; private set; }

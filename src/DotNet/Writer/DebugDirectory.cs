@@ -2,11 +2,26 @@
 
 using System;
 ﻿using System.IO;
-using dnlib.DotNet.Pdb;
 using dnlib.IO;
 using dnlib.PE;
 
 namespace dnlib.DotNet.Writer {
+	/// <summary>
+	/// IMAGE_DEBUG_DIRECTORY
+	/// </summary>
+	public struct IMAGE_DEBUG_DIRECTORY {
+#pragma warning disable 1591
+		public uint Characteristics;
+		public uint TimeDateStamp;
+		public ushort MajorVersion;
+		public ushort MinorVersion;
+		public uint Type;
+		public uint SizeOfData;
+		public uint AddressOfRawData;
+		public uint PointerToRawData;
+#pragma warning restore 1591
+	}
+
 	/// <summary>
 	/// Debug directory chunk
 	/// </summary>
@@ -15,7 +30,7 @@ namespace dnlib.DotNet.Writer {
 		RVA rva;
 		bool dontWriteAnything;
 		uint length;
-		internal IMAGE_DEBUG_DIRECTORY debugDirData;
+		internal IMAGE_DEBUG_DIRECTORY debugDirData = default(IMAGE_DEBUG_DIRECTORY);
 		uint timeDateStamp;
 		byte[] data;
 
