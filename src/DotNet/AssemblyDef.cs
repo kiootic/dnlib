@@ -848,17 +848,6 @@ namespace dnlib.DotNet {
 		/// </summary>
 		/// <param name="asmName">Assembly name info</param>
 		/// <exception cref="ArgumentNullException">If <paramref name="asmName"/> is <c>null</c></exception>
-		public AssemblyDefUser(AssemblyName asmName)
-			: this(new AssemblyNameInfo(asmName)) {
-			this.hashAlgorithm = (AssemblyHashAlgorithm)asmName.HashAlgorithm;
-			this.attributes = (int)asmName.Flags;
-		}
-
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="asmName">Assembly name info</param>
-		/// <exception cref="ArgumentNullException">If <paramref name="asmName"/> is <c>null</c></exception>
 		public AssemblyDefUser(IAssembly asmName) {
 			if (asmName == null)
 				throw new ArgumentNullException("asmName");

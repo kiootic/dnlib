@@ -280,22 +280,6 @@ namespace dnlib.DotNet {
 			this.culture = UTF8String.IsNullOrEmpty(asm.Culture) ? UTF8String.Empty : asm.Culture;
 		}
 
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="asmName">Assembly name info</param>
-		public AssemblyNameInfo(AssemblyName asmName) {
-			if (asmName == null)
-				return;
-			this.hashAlgId = (AssemblyHashAlgorithm)asmName.HashAlgorithm;
-			this.version = asmName.Version ?? new Version(0, 0, 0, 0);
-			this.flags = (AssemblyAttributes)asmName.Flags;
-			this.publicKeyOrToken = (PublicKeyBase)PublicKeyBase.CreatePublicKey(asmName.GetPublicKey()) ??
-							PublicKeyBase.CreatePublicKeyToken(asmName.GetPublicKeyToken());
-			this.name = asmName.Name ?? string.Empty;
-			this.culture = asmName.CultureInfo != null && asmName.CultureInfo.Name != null ? asmName.CultureInfo.Name : string.Empty;
-		}
-
 		/// <inhertidoc/>
 		public override string ToString() {
 			return FullName;

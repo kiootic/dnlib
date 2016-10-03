@@ -419,46 +419,31 @@ namespace dnlib.DotNet {
 	/// Dummy logger which ignores all messages, but can optionally throw on errors.
 	/// </summary>
 	public sealed class DummyLogger : ILogger {
-		ConstructorInfo ctor;
+		bool throws;
 
 		/// <summary>
 		/// It ignores everything and doesn't throw anything.
 		/// </summary>
-		public static readonly DummyLogger NoThrowInstance = new DummyLogger();
+		public static readonly DummyLogger NoThrowInstance = new DummyLogger(false);
 
 		/// <summary>
 		/// Throws a <see cref="ModuleWriterException"/> on errors, but ignores anything else.
 		/// </summary>
-		public static readonly DummyLogger ThrowModuleWriterExceptionOnErrorInstance = new DummyLogger(typeof(ModuleWriterException));
+		public static readonly DummyLogger ThrowModuleWriterExceptionOnErrorInstance = new DummyLogger(true);
 
-		DummyLogger() {
-		}
-
-		/// <summary>
-		/// Constructor
-		/// </summary>
-		/// <param name="exceptionToThrow">If non-<c>null</c>, this exception type is thrown on
-		/// errors. It must have a public constructor that takes a <see cref="string"/> as the only
-		/// argument.</param>
-		public DummyLogger(Type exceptionToThrow) {
-			if (exceptionToThrow != null) {
-				if (!exceptionToThrow.IsSubclassOf(typeof(Exception)))
-					throw new ArgumentException(string.Format("Not a System.Exception sub class: {0}", exceptionToThrow.GetType()));
-				ctor = exceptionToThrow.GetConstructor(new Type[] { typeof(string) });
-				if (ctor == null)
-					throw new ArgumentException(string.Format("Exception type {0} doesn't have a public constructor that takes a string as the only argument", exceptionToThrow.GetType()));
-			}
+		DummyLogger(bool throws) {
+			this.throws = throws;
 		}
 
 		/// <inheritdoc/>
 		public void Log(object sender, LoggerEvent loggerEvent, string format, params object[] args) {
-			if (loggerEvent == LoggerEvent.Error && ctor != null)
-				throw (Exception)ctor.Invoke(new object[] { string.Format(format, args) });
+			if (loggerEvent == LoggerEvent.Error && throws)
+				throw new ModuleWriterException(string.Format(format, args));
 		}
 
 		/// <inheritdoc/>
 		public bool IgnoresEvent(LoggerEvent loggerEvent) {
-			if (ctor == null)
+			if (!throws)
 				return true;
 			return loggerEvent != LoggerEvent.Error;
 		}

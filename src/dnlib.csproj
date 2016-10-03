@@ -189,7 +189,6 @@
     <Compile Include="DotNet\PublicKeyBase.cs" />
     <Compile Include="DotNet\PublicKeyToken.cs" />
     <Compile Include="DotNet\RecursionCounter.cs" />
-    <Compile Include="DotNet\ReflectionExtensions.cs" />
     <Compile Include="DotNet\ResolveException.cs" />
     <Compile Include="DotNet\Resolver.cs" />
     <Compile Include="DotNet\Resource.cs" />

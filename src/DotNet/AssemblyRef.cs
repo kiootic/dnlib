@@ -439,16 +439,6 @@ namespace dnlib.DotNet {
 		/// <summary>
 		/// Constructor
 		/// </summary>
-		/// <param name="asmName">Assembly name info</param>
-		/// <exception cref="ArgumentNullException">If <paramref name="asmName"/> is <c>null</c></exception>
-		public AssemblyRefUser(AssemblyName asmName)
-			: this(new AssemblyNameInfo(asmName)) {
-			this.attributes = (int)asmName.Flags;
-		}
-
-		/// <summary>
-		/// Constructor
-		/// </summary>
 		/// <param name="assembly">Assembly</param>
 		public AssemblyRefUser(IAssembly assembly) {
 			if (assembly == null)
